@@ -16,7 +16,7 @@ public class DefendTheCode{
 		try{
 			getPassword();
 		}catch(Exception e){
-			System.out.println("Something bad happened...");
+			System.out.println("Something bad happened..");
 		}
 	}
 	
