@@ -16,25 +16,31 @@ public class DefendTheCode{
 		try{
 			getPassword();
 		}catch(Exception e){
-			System.out.println("Something bad happened..");
+			System.out.println("Something bad happened...");
 		}
 	}
 	
-	static void getPassword() throws NoSuchAlgorithmException, InvalidKeySpecException{
-		String passwordRegex = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
+	static boolean getInput(String regex, String prompt, String inputType) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		boolean isValid = false;
 		
 		while(!isValid){
-			System.out.println("Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character): ");
-			String passwordAttempt = kb.nextLine();
+			System.out.println(prompt);
+			String attempt = kb.nextLine();
 			isValid = true;
 			
-			if(compareToRegex(passwordRegex, passwordAttempt)){
-				getSecuredPassword(passwordAttempt, getSalt());
-				System.out.println("valid");//just to test
-				return;
+			if(inputType.equals("password") && compareToRegex(regex, attempt)){
+				getSecuredPassword(attempt, getSalt());
+				isValid = true;
 			}
 		}
+		return isValid;
+	}
+	
+	static boolean getPassword() throws NoSuchAlgorithmException, InvalidKeySpecException{
+		String passwordRegex = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
+		String prompt = "Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character)";
+		boolean isValid = getInput(passwordRegex, prompt, "password");
+		return isValid;
 	}
 	
 	static boolean validatePassword(String passwordAttempt, byte[] securePassword, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException{
