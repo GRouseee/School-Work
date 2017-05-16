@@ -33,6 +33,7 @@ public class DefendTheCode{
 				isValid = true;
 			}
 		}
+		
 		return isValid;
 	}
 	
@@ -40,6 +41,7 @@ public class DefendTheCode{
 		String passwordRegex = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
 		String prompt = "Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character)";
 		boolean isValid = getInput(passwordRegex, prompt, "password");
+		
 		return isValid;
 	}
 	
