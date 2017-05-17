@@ -13,7 +13,7 @@ import javax.crypto.spec.PBEKeySpec;
 public class DefendTheCode{
 	private static Scanner kb = new Scanner(System.in);
 	private static int int1, int2, addResult, multResult;
-	private static String firstName, lastName, inputFile, password, verifyPassword;
+	private static String firstName, lastName, inputFile, password, verifyPassword, outputFile;
 	private static byte[] salt;
 
 	public static void main(String[] args){
@@ -24,13 +24,20 @@ public class DefendTheCode{
 			getInteger();
 			getInputFile();
 			getOutputName();
+			if(combineContents()){
+				System.out.println("Successfully copied First + Last name, addition of the integers, mastication" +
+						" of the integers, and the contents of the input file into the output file which can be " +
+						"found in the directory of the java file.");
+			}
 			System.out.println(firstName + " " + lastName);
 			System.out.println(password);
 			System.out.println(addResult);
 			System.out.println(multResult);
      		System.out.println(inputFile.toString());
+     		System.out.println(outputFile);
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
+			e.printStackTrace();
 		}
 	}
 	
@@ -55,7 +62,9 @@ public class DefendTheCode{
 
 			else if(inputType.equals("outputfile") && compareToRegex(regex, attempt)){
 				isValid = checkUniqueFileName(attempt);
+				outputFile = attempt;
 			}
+
 			else if(inputType.equals("integer") && compareToRegex(regex, attempt)){
 				intCount++;
 				int1 = Integer.parseInt(attempt);
@@ -183,7 +192,8 @@ public class DefendTheCode{
 	 */
 	static boolean getOutputName() throws NoSuchAlgorithmException, InvalidKeySpecException{
 		String outputfileRegex = "([a-zA-Z0-9!#$%&\\(\\)\\{\\}\\]\\[\\^_`~@; ]){1,255}";
-		String prompt = "Enter a output file name. (must be within this directory, the file cannot exist, no file extensions, and it must be using the English Alphabet.)";
+		String prompt = "Enter a output file name. (must be within this directory (run from commandline), the file cannot exist" +
+				", no file extensions, and it must be using the English Alphabet.)";
 		
 		return getInput(outputfileRegex, prompt, "outputfile");
 	}
@@ -206,6 +216,55 @@ public class DefendTheCode{
 				}
 			}
 		}
+
+		return true;
+	}
+
+	/**
+	 * Combines First and Last name, addition of int1 and int2, multiplication of int1 and int2,
+	 * and the contents of inputFile and writes them into the specified outputFile.
+	 *
+	 * Returns true if a successful combination, false otherwise.
+	 * @return boolean
+	 */
+	static boolean combineContents(){
+
+		try{
+			String line;
+
+			//Opens inputfile and creates output file
+			File input = new File(inputFile);
+			File output = new File(outputFile +".txt");
+
+			//Opens inputfile reader
+			FileReader fr = new FileReader(System.getProperty("user.dir")+ "/src/Java/"+inputFile);
+			BufferedReader br = new BufferedReader(fr);
+
+			//Opens outputfile Writer
+			FileWriter fw = new FileWriter(outputFile +".txt");
+			BufferedWriter bw = new BufferedWriter(fw);
+
+			bw.write("First and Last name: "+ firstName + " " + lastName);
+			bw.newLine();
+			bw.write("Adding the two ints: "+ Integer.toString(addInts(int1, int2)));
+			bw.newLine();
+			bw.write("Multiplying the two ints: " + Integer.toString(multInts(int1,int2)));
+			bw.newLine();
+
+			while((line = br.readLine())!=null){
+				bw.write(line);
+				bw.newLine();
+			}
+
+			br.close();
+			bw.close();
+			fr.close();
+			fw.close();
+		}catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+
 
 		return true;
 	}
