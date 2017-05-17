@@ -20,11 +20,11 @@ public class DefendTheCode{
 	
 	public static void main(String[] args){
 		try{
-<<<<<<< HEAD
+
 			//getPassword();
 			getOutputName();
 
-=======
+
 			getPassword();
 			getInteger();
 			getInteger();
@@ -32,7 +32,6 @@ public class DefendTheCode{
 			System.out.println(password);
 			System.out.println(addResult);
 			System.out.println(multResult);
->>>>>>> upstream/master
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 		}
@@ -44,26 +43,22 @@ public class DefendTheCode{
 		
 		while(!isValid){
 			System.out.println(prompt);
-<<<<<<< HEAD
-			String attempt = kb.nextLine();;
+
+			String attempt = kb.nextLine();
 
 			//isValid = true;
-=======
-			String attempt = kb.nextLine();
->>>>>>> upstream/master
+
 			
 			if(inputType.equals("password") && compareToRegex(regex, attempt)){
 				password = getSecuredPassword(attempt, getSalt()).toString();
 				isValid = true;
 			}
-<<<<<<< HEAD
 			else if(inputType.equals("outputfile") && compareToRegex(regex, attempt)){
 				isValid = checkUniqueFileName(attempt);
 			}
 			else{
 				System.out.println("Failed");
-=======
-			
+			}
 			if(inputType.equals("integer") && compareToRegex(regex, attempt)){
 				intCount++;
 				int1 = Integer.parseInt(attempt);
@@ -74,7 +69,6 @@ public class DefendTheCode{
 					multResult = multInts(int1, int2);
 					isValid = true;
 				}
->>>>>>> upstream/master
 			}
 		}
 		
