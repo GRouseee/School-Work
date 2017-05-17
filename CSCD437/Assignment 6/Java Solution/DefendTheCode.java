@@ -11,27 +11,24 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 public class DefendTheCode{
-	static Scanner kb = new Scanner(System.in);
-	static String password = null;
-	static int int1 = 0;
-	static int int2 = 0;
-	static int addResult = 0;
-	static int multResult = 0;
-	private static String firstName, lastName, inputFile;
+	private static Scanner kb = new Scanner(System.in);
+	private static int int1, int2, addResult, multResult;
+	private static String firstName, lastName, inputFile, password, verifyPassword;
+	private static byte[] salt;
 
 	public static void main(String[] args){
 		try{
 			getFullName();
 			getPassword();
-			getInteger();
+			verifyPassword();
 			getInteger();
 			getInputFile();
-      			System.out.println(firstName + " " + lastName);
 			getOutputName();
+			System.out.println(firstName + " " + lastName);
 			System.out.println(password);
 			System.out.println(addResult);
 			System.out.println(multResult);
-     			System.out.println(inputFile);
+     		System.out.println(inputFile.toString());
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 		}
@@ -50,6 +47,11 @@ public class DefendTheCode{
 				password = getSecuredPassword(attempt, getSalt()).toString();
 				isValid = true;
 			}
+			
+			else if(inputType.equals("verifypassword") && compareToRegex(regex, attempt)){
+				verifyPassword = getSecuredPassword(attempt, salt).toString();
+				isValid = validatePassword(attempt, password.getBytes(), salt);
+			}
 
 			else if(inputType.equals("outputfile") && compareToRegex(regex, attempt)){
 				isValid = checkUniqueFileName(attempt);
@@ -66,17 +68,17 @@ public class DefendTheCode{
 				}
 			}
 
-			if(inputType.equals("firstName") && compareToRegex(regex, attempt)){
+			else if(inputType.equals("firstName") && compareToRegex(regex, attempt)){
 				firstName = attempt;
 				isValid = true;
 			}
 
-			if(inputType.equals("lastName") && compareToRegex(regex, attempt)){
+			else if(inputType.equals("lastName") && compareToRegex(regex, attempt)){
 				lastName = attempt;
 				isValid = true;
 			}
 
-			if(inputType.equals("inputFile") && compareToRegex(regex, attempt)){
+			else if(inputType.equals("inputFile") && compareToRegex(regex, attempt)){
 				inputFile = attempt;
 				isValid = true;
 			}
@@ -109,6 +111,21 @@ public class DefendTheCode{
 		return isValid;
 	}
 	
+	static boolean verifyPassword() throws NoSuchAlgorithmException, InvalidKeySpecException{
+		String passwordRegex = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
+		String prompt = "Re-enter your password: ";
+		boolean isValid = getInput(passwordRegex, prompt, "verifypassword");
+		
+		if(isValid){
+			System.out.println("Your password is valid.");
+			return isValid;
+		}
+		else{
+			System.out.println("Password is invalid.");
+			return isValid;
+		}
+	}
+	
 	static boolean validatePassword(String passwordAttempt, byte[] securePassword, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		byte[] securePasswordAttempt = getSecuredPassword(passwordAttempt, salt);
 		
@@ -127,7 +144,7 @@ public class DefendTheCode{
 	
 	static byte[] getSalt() throws NoSuchAlgorithmException{
 		/*Make our salt*/
-		byte[] salt = new byte[8];
+		salt = new byte[8];
 		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
 		random.nextBytes(salt);
 		
