@@ -1,3 +1,4 @@
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -25,12 +26,12 @@ public class DefendTheCode{
 			getInteger();
 			getInteger();
 			getInputFile();
-
-            System.out.println(firstName + " " + lastName);
+      System.out.println(firstName + " " + lastName);
+			getOutputName();
 			System.out.println(password);
 			System.out.println(addResult);
 			System.out.println(multResult);
-            System.out.println(inputFile);
+      System.out.println(inputFile);
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 		}
@@ -42,6 +43,7 @@ public class DefendTheCode{
 
 		while(!isValid){
 			System.out.println(prompt);
+
 			String attempt = kb.nextLine();
 
 			if(inputType.equals("password") && compareToRegex(regex, attempt)){
@@ -49,7 +51,10 @@ public class DefendTheCode{
 				isValid = true;
 			}
 
-			if(inputType.equals("integer") && compareToRegex(regex, attempt)){
+			else if(inputType.equals("outputfile") && compareToRegex(regex, attempt)){
+				isValid = checkUniqueFileName(attempt);
+			}
+			else if(inputType.equals("integer") && compareToRegex(regex, attempt)){
 				intCount++;
 				int1 = Integer.parseInt(attempt);
 
@@ -153,4 +158,38 @@ public class DefendTheCode{
         
         	return matcher.matches();
 	}
+
+
+	/**
+	 * Retrieves the output file name from the user.
+	 * @return boolean
+	 */
+	static boolean getOutputName() throws NoSuchAlgorithmException, InvalidKeySpecException{
+		String outputfileRegex = "([a-zA-Z0-9!#$%&\\(\\)\\{\\}\\]\\[\\^_`~@; ]){1,255}";
+		String prompt = "Enter a output file name. (must be within this directory, the file cannot exist, no file extensions, and it must be using the English Alphabet.)";
+		return getInput(outputfileRegex, prompt, "outputfile");
+	}
+
+
+	/**
+	 * Checks current directory's file/directory names against incoming param. Returns true if unique.
+	 * @param attempt
+	 * @return boolean
+	 */
+	static boolean checkUniqueFileName(String attempt){
+
+		File current_dir = new File(System.getProperty("user.dir") + "/src/Java");
+		File[] listOfFiles = current_dir.listFiles();
+		if(listOfFiles!=null){
+			for(File f: listOfFiles){
+				if(f.getName().equals(attempt+".txt")){
+					System.out.println("File with that name already exists.");
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 }
