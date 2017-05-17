@@ -20,15 +20,10 @@ public class DefendTheCode{
 	
 	public static void main(String[] args){
 		try{
-
 			getPassword();
+			getInteger();
+			getInteger();
 			getOutputName();
-
-
-			getPassword();
-			getInteger();
-			getInteger();
-			
 			System.out.println(password);
 			System.out.println(addResult);
 			System.out.println(multResult);
@@ -56,10 +51,7 @@ public class DefendTheCode{
 			else if(inputType.equals("outputfile") && compareToRegex(regex, attempt)){
 				isValid = checkUniqueFileName(attempt);
 			}
-			else{
-				System.out.println("Failed");
-			}
-			if(inputType.equals("integer") && compareToRegex(regex, attempt)){
+			else if(inputType.equals("integer") && compareToRegex(regex, attempt)){
 				intCount++;
 				int1 = Integer.parseInt(attempt);
 				
