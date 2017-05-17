@@ -26,12 +26,12 @@ public class DefendTheCode{
 			getInteger();
 			getInteger();
 			getInputFile();
-      System.out.println(firstName + " " + lastName);
+      			System.out.println(firstName + " " + lastName);
 			getOutputName();
 			System.out.println(password);
 			System.out.println(addResult);
 			System.out.println(multResult);
-      System.out.println(inputFile);
+     			System.out.println(inputFile);
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 		}
@@ -167,6 +167,7 @@ public class DefendTheCode{
 	static boolean getOutputName() throws NoSuchAlgorithmException, InvalidKeySpecException{
 		String outputfileRegex = "([a-zA-Z0-9!#$%&\\(\\)\\{\\}\\]\\[\\^_`~@; ]){1,255}";
 		String prompt = "Enter a output file name. (must be within this directory, the file cannot exist, no file extensions, and it must be using the English Alphabet.)";
+		
 		return getInput(outputfileRegex, prompt, "outputfile");
 	}
 
