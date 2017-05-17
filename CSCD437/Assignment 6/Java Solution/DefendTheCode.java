@@ -1,3 +1,4 @@
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -14,7 +15,9 @@ public class DefendTheCode{
 	
 	public static void main(String[] args){
 		try{
-			getPassword();
+			//getPassword();
+			getOutputName();
+
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 		}
@@ -25,12 +28,19 @@ public class DefendTheCode{
 		
 		while(!isValid){
 			System.out.println(prompt);
-			String attempt = kb.nextLine();
-			isValid = true;
+			String attempt = kb.nextLine();;
+
+			//isValid = true;
 			
 			if(inputType.equals("password") && compareToRegex(regex, attempt)){
 				getSecuredPassword(attempt, getSalt());
 				isValid = true;
+			}
+			else if(inputType.equals("outputfile") && compareToRegex(regex, attempt)){
+				isValid = checkUniqueFileName(attempt);
+			}
+			else{
+				System.out.println("Failed");
 			}
 		}
 		
@@ -76,4 +86,38 @@ public class DefendTheCode{
         
         	return matcher.matches();
 	}
+
+
+	/**
+	 * Retrieves the output file name from the user.
+	 * @return boolean
+	 */
+	static boolean getOutputName() throws NoSuchAlgorithmException, InvalidKeySpecException{
+		String outputfileRegex = "([a-zA-Z0-9!#$%&\\(\\)\\{\\}\\]\\[\\^_`~@; ]){1,255}";
+		String prompt = "Enter a output file name. (must be within this directory, the file cannot exist, no file extensions, and it must be using the English Alphabet.)";
+		return getInput(outputfileRegex, prompt, "outputfile");
+	}
+
+
+	/**
+	 * Checks current directory's file/directory names against incoming param. Returns true if unique.
+	 * @param attempt
+	 * @return boolean
+	 */
+	static boolean checkUniqueFileName(String attempt){
+
+		File current_dir = new File(System.getProperty("user.dir") + "/src/Java");
+		File[] listOfFiles = current_dir.listFiles();
+		if(listOfFiles!=null){
+			for(File f: listOfFiles){
+				if(f.getName().equals(attempt+".txt")){
+					System.out.println("File with that name already exists.");
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 }
