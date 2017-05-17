@@ -3,7 +3,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +19,7 @@ public class DefendTheCode{
 		try{
 			getFullName();
 			getPassword();
-			verifyPassword();
+			//verifyPassword();
 			getInteger();
 			getInputFile();
 			getOutputName();
@@ -51,13 +50,14 @@ public class DefendTheCode{
 			String attempt = kb.nextLine();
 
 			if(inputType.equals("password") && compareToRegex(regex, attempt)){
-				password = getSecuredPassword(attempt, getSalt()).toString();
+				salt = getSalt();
+				password = getSecuredPassword(attempt, salt).toString();
 				isValid = true;
 			}
 			
 			else if(inputType.equals("verifypassword") && compareToRegex(regex, attempt)){
 				verifyPassword = getSecuredPassword(attempt, salt).toString();
-				isValid = validatePassword(attempt, password.getBytes(), salt);
+				isValid = validatePassword(verifyPassword, password);
 			}
 
 			else if(inputType.equals("outputfile") && compareToRegex(regex, attempt)){
@@ -105,7 +105,7 @@ public class DefendTheCode{
 	}
 
 	static boolean getInteger() throws NoSuchAlgorithmException, InvalidKeySpecException{
-		String intRegex = "\\d{1}";
+		String intRegex = "\\d";
 		String prompt = "Enter an integer value: ";
 		boolean isValid = getInput(intRegex, prompt, "integer");
 
@@ -135,17 +135,15 @@ public class DefendTheCode{
 		}
 	}
 	
-	static boolean validatePassword(String passwordAttempt, byte[] securePassword, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException{
-		byte[] securePasswordAttempt = getSecuredPassword(passwordAttempt, salt);
-		
-		return Arrays.equals(securePassword, securePasswordAttempt);
+	static boolean validatePassword(String passwordAttempt, String securePassword){;
+		return passwordAttempt.equals(securePassword);
 	}
 	
-	static byte[] getSecuredPassword(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException{
+	static byte[] getSecuredPassword(String password, byte[] theSalt) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		/*Make our secure password*/
 		int keyLen = 160;
 		int iterations = 2000;
-		KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterations, keyLen);
+		KeySpec keySpec = new PBEKeySpec(password.toCharArray(), theSalt, iterations, keyLen);
 		SecretKeyFactory key = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 		
 		return key.generateSecret(keySpec).getEncoded();
@@ -153,11 +151,11 @@ public class DefendTheCode{
 	
 	static byte[] getSalt() throws NoSuchAlgorithmException{
 		/*Make our salt*/
-		salt = new byte[8];
+		byte[] theSalt = new byte[8];
 		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-		random.nextBytes(salt);
+		random.nextBytes(theSalt);
 		
-		return salt;
+		return theSalt;
 	}
 
 	static boolean getFullName() throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -268,5 +266,4 @@ public class DefendTheCode{
 
 		return true;
 	}
-
 }
