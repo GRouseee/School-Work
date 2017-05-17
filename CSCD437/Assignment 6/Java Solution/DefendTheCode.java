@@ -21,7 +21,7 @@ public class DefendTheCode{
 	public static void main(String[] args){
 		try{
 
-			//getPassword();
+			getPassword();
 			getOutputName();
 
 
