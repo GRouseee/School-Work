@@ -110,9 +110,9 @@ public class DefendTheCode{
 	}
 	
 	static boolean compareToRegex(String regex, String input){
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
+        	Pattern pattern = Pattern.compile(regex);
+        	Matcher matcher = pattern.matcher(input);
         
-        return matcher.matches();
+        	return matcher.matches();
 	}
 }
