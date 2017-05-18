@@ -34,8 +34,8 @@ public class DefendTheCode{
 			System.out.println(password);
 			System.out.println(addResult);
 			System.out.println(multResult);
-			System.out.println(inputFile.toString());
-			System.out.println(outputFile);
+     		System.out.println(inputFile.toString());
+     		System.out.println(outputFile);
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 			e.printStackTrace();
@@ -68,14 +68,21 @@ public class DefendTheCode{
 			}
 
 			else if(inputType.equals("integer") && compareToRegex(regex, attempt)){
-				intCount++;
-				int1 = Integer.parseInt(attempt);
-
-				if(intCount == 2){
-					int2 =Integer.parseInt(attempt);
-					addResult = addInts(int1, int2);
-					multResult = multInts(int1, int2);
-					isValid = true;
+				if(Integer.parseInt(attempt) > Integer.MAX_VALUE)
+					isValid = false;
+				if(Integer.parseInt(attempt) < Integer.MIN_VALUE)
+					isValid = false;
+				else{
+					intCount++;
+					if(intCount == 1)
+						int1 = Integer.parseInt(attempt);
+	
+					if(intCount == 2){
+						int2 = Integer.parseInt(attempt);
+						addResult = addInts(int1, int2);
+						multResult = multInts(int1, int2);
+						isValid = true;
+					}
 				}
 			}
 
@@ -107,7 +114,7 @@ public class DefendTheCode{
 	}
 
 	static boolean getInteger() throws NoSuchAlgorithmException, InvalidKeySpecException{
-		String intRegex = "\\d";
+		String intRegex = "[+-]?[0-9]{1,10}";
 		String prompt = "Enter an integer value: ";
 		boolean isValid = getInput(intRegex, prompt, "integer");
 
