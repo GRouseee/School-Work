@@ -178,8 +178,8 @@ public class DefendTheCode{
 	}
 
 	static boolean getInputFile() throws InvalidKeySpecException, NoSuchAlgorithmException {
-		String inputFileRegex = "^[\\w_-]{1,50}(.txt)$";
-		String prompt = "Enter an input file from current working directory (e.g. input.txt)";
+		String inputFileRegex = "^[\\w_\\\\.\\(\\)\\[\\]\\{\\}-]{1,255}(.txt)$";
+		String prompt = "Enter an input file from current working directory, must be a .txt file (e.g. input.txt)";
 		boolean isValid = getInput(inputFileRegex, prompt, "inputFile");
 
 		return isValid;
