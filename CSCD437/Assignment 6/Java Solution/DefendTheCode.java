@@ -34,8 +34,8 @@ public class DefendTheCode{
 			System.out.println(password);
 			System.out.println(addResult);
 			System.out.println(multResult);
-     		System.out.println(inputFile.toString());
-     		System.out.println(outputFile);
+			System.out.println(inputFile.toString());
+			System.out.println(outputFile);
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 			e.printStackTrace();
