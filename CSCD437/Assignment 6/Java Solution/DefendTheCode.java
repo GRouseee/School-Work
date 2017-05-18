@@ -3,6 +3,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,14 +13,15 @@ import javax.crypto.spec.PBEKeySpec;
 public class DefendTheCode{
 	private static Scanner kb = new Scanner(System.in);
 	private static int int1, int2, addResult, multResult;
-	private static String firstName, lastName, inputFile, password, verifyPassword, outputFile;
+	private static String firstName, lastName, inputFile, outputFile; 
+	private static byte[]password, verifyPassword;
 	private static byte[] salt;
 
 	public static void main(String[] args){
 		try{
 			getFullName();
 			getPassword();
-			//verifyPassword();
+			verifyPassword();
 			getInteger();
 			getInputFile();
 			getOutputName();
@@ -51,12 +53,12 @@ public class DefendTheCode{
 
 			if(inputType.equals("password") && compareToRegex(regex, attempt)){
 				salt = getSalt();
-				password = getSecuredPassword(attempt, salt).toString();
+				password = getSecuredPassword(attempt, salt);
 				isValid = true;
 			}
 			
 			else if(inputType.equals("verifypassword") && compareToRegex(regex, attempt)){
-				verifyPassword = getSecuredPassword(attempt, salt).toString();
+				verifyPassword = getSecuredPassword(attempt, salt);
 				isValid = validatePassword(verifyPassword, password);
 			}
 
@@ -135,8 +137,8 @@ public class DefendTheCode{
 		}
 	}
 	
-	static boolean validatePassword(String passwordAttempt, String securePassword){;
-		return passwordAttempt.equals(securePassword);
+	static boolean validatePassword(byte[] passwordAttempt, byte[] securePassword){;
+		return Arrays.equals(passwordAttempt, securePassword);
 	}
 	
 	static byte[] getSecuredPassword(String password, byte[] theSalt) throws NoSuchAlgorithmException, InvalidKeySpecException{
@@ -262,7 +264,7 @@ public class DefendTheCode{
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		return true;
 	}
 }
