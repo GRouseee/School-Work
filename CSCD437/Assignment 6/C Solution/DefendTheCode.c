@@ -22,6 +22,8 @@ int main()
 	printf("%s\r\n", inputFile);
 	printf("%s\r\n", outputFile);
 
+    combiner();
+
     return 0;
 }
 
@@ -34,7 +36,6 @@ void getName(char* firstOrLast, char* name)
 	memset(buff, '\0', MAX_STRING);
 	memset(name, '\0', MAX_STRING);
     regcomp(&nameRegex, "^[A-Za-z'-]{1,50}$", REG_EXTENDED);
-
     while (!isValid)
     {
         printf("Enter your %s name (50 or fewer characters)\r\n", firstOrLast);
@@ -122,5 +123,24 @@ void strip(char *array)
 		 array[x] = '\0';
 
 	  x++;
+    }
+}
+
+int combiner(){
+    char * cwd = current_directory();
+    printf(cwd);
+
+    return 0;
+}
+
+
+char * current_directory() {
+    char cwd[1024];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        char *cwd_tosend = (char *)malloc(sizeof(char) * sizeof(cwd)+1);
+        return cwd_tosend;
+    }
+    else {
+        return null;
     }
 }
