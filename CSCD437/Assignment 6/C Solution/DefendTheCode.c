@@ -5,68 +5,91 @@
 
 #define MAX_STRING 50
 
+void getPassword(char*);
 void getName(char* firstOrLast, char* name);
 void getFilename(char* inOrOut, char* name);
 void strip(char* array);
+char * current_directory();
 
-int main()
-{
-    char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING];
+int main(){
+    	char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING];
 
-    getName("first", firstName);
-    getName("last", lastName);
+    	getName("first", firstName);
+    	getName("last", lastName);
+	getPassword(password);
 	getFilename("in", inputFile);
 	getFilename("out", outputFile);
 
-    printf("\r\n%s %s\r\n", firstName, lastName);
+    	printf("\r\n%s %s\r\n", firstName, lastName);
 	printf("%s\r\n", inputFile);
 	printf("%s\r\n", outputFile);
 
-    combiner();
-
-    return 0;
+	return 0;
 }
 
-void getName(char* firstOrLast, char* name)
-{
-    int isValid = 0;
-    char buff[MAX_STRING + 1];
-    regex_t nameRegex;
+void getName(char* firstOrLast, char* name){
+    	int isValid = 0;
+    	char buff[MAX_STRING + 1];
+    	regex_t nameRegex;
 
 	memset(buff, '\0', MAX_STRING);
 	memset(name, '\0', MAX_STRING);
-    regcomp(&nameRegex, "^[A-Za-z'-]{1,50}$", REG_EXTENDED);
-    while (!isValid)
-    {
-        printf("Enter your %s name (50 or fewer characters)\r\n", firstOrLast);
+    	regcomp(&nameRegex, "^[A-Za-z'-]{1,50}$", REG_EXTENDED);
+
+    	while (!isValid){
+        	printf("Enter your %s name (50 or fewer characters)\r\n", firstOrLast);
         
-        if (fgets(buff, MAX_STRING, stdin))
-		{
+        	if (fgets(buff, MAX_STRING, stdin)){
 			strip(buff);
 
-			if (!regexec(&nameRegex, buff, 0, 0, 0))
-			{
-			isValid = 1;
+			if (!regexec(&nameRegex, buff, 0, 0, 0)){
+				isValid = 1;
 			}
-
-			else
-			{
-			printf("%s", "Invalid name\r\n");
+			else{
+				printf("%s", "Invalid name\r\n");
 			}
 		}
-	
-		else
-		{
+		else{
 			printf("%s", "Invalid name\r\n");
 		}
     }
 
-    strncpy(name, buff, strlen(buff));
-    regfree(&nameRegex);
+    	strncpy(name, buff, strlen(buff));
+	regfree(&nameRegex);
 }
 
-void getFilename(char* inOrOut, char* name)
-{
+void getPassword(char* password){
+	int isValid = 0;
+	char buff[MAX_STRING + 1];
+	regex_t passwordRegex;
+
+	memset(buff, '\0', MAX_STRING);
+	memset(password, '\0', MAX_STRING);
+	regcomp(&passwordRegex, "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&=+*])(?=\\S+$).{8,}", REG_EXTENDED);
+
+	while(!isValid){
+		printf("Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character)\r\n");
+
+		if(fgets(buff, MAX_STRING, stdin)){
+			strip(buff);
+
+			if(!regexec(&passwordRegex, buff, 0, 0, 0)){
+				isValid = 1;
+			}
+			else{
+				printf("%s", "Invalid password\r\n");
+			}
+		}
+		else{
+			printf("%s", "Invalid password\r\n");
+		}
+	}
+
+	strncpy(password, buff, strlen(buff));
+	regfree(&passwordRegex);
+}
+
+void getFilename(char* inOrOut, char* name){
 	int isValid = 0;
 	char buff[MAX_STRING + 1];
 	regex_t fileRegex;
@@ -75,62 +98,46 @@ void getFilename(char* inOrOut, char* name)
 	memset(name, '\0', MAX_STRING);
 	regcomp(&fileRegex, "^[A-Za-z0-9]{1,50}(.txt)$", REG_EXTENDED);
 
-	while(!isValid)
-	{
+	while(!isValid){
 		printf("Enter an %sput file (must be a .txt file in the same directory as the application)\r\n", inOrOut);
 		
-		if (fgets(buff, MAX_STRING, stdin))
-		{
+		if (fgets(buff, MAX_STRING, stdin)){
 			strip(buff);
 
-			if (!regexec(&fileRegex, buff, 0, 0, 0))
-			{
+			if (!regexec(&fileRegex, buff, 0, 0, 0)){
 				isValid = 1;
 			}
 
-			else
-			{
+			else{
 				printf("%s", "Invalid filename\r\n");
 			}
 		}
 
-		else
-		{
+		else{
 			printf("%s", "Invalid filename\r\n");
 		}
 	}
 
 	strncpy(name, buff, strlen(buff));
-    regfree(&fileRegex);
+    	regfree(&fileRegex);
 }
 
-void strip(char *array)
-{
-	if(array == NULL)
-	{
+void strip(char *array){
+	if(array == NULL){
 		perror("array is null");
 		exit(-99);
 	}
 
 	int len = strlen(array), x = 0;
 
-	while(array[x] != '\0' && x < len)
-	{
-	  if(array[x] == '\r')
-		 array[x] = '\0';
+	while(array[x] != '\0' && x < len){
+		if(array[x] == '\r')
+		 	array[x] = '\0';
 
-	  else if(array[x] == '\n')
-		 array[x] = '\0';
-
-	  x++;
-    }
-}
-
-int combiner(){
-    char * cwd = current_directory();
-    printf(cwd);
-
-    return 0;
+	  	else if(array[x] == '\n')
+		 	array[x] = '\0';
+		x++;
+	}
 }
 
 
@@ -143,4 +150,8 @@ char * current_directory() {
     else {
         return null;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 42566891ebad850664201dd57bd90b7647686772
