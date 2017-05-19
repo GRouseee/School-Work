@@ -9,6 +9,8 @@ void getPassword(char*);
 void getName(char* firstOrLast, char* name);
 void getFilename(char* inOrOut, char* name);
 void strip(char* array);
+char * current_directory();
+void combiner();
 
 int main(){
     	char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING];
@@ -137,4 +139,69 @@ void strip(char *array){
 		 	array[x] = '\0';
 		x++;
 	}
+}
+
+void combiner(char *firstName, char *lastName,char *inputFile, char *outputFile){
+    char c;
+	char * cwd = current_directory();
+    FILE * input = findFile(inputFile, 1);
+    FILE * output = NULL;
+    FILE * checkUnique = findFile(outputFile, 1);
+    if(checkUnique==NULL) {
+        output = findFile(outputFile, 0);
+    }
+    else{
+        printf("Output file %s already exists. Exiting.\n", outputFile);
+        return;
+    }
+
+    if(input == NULL) {
+        printf("Input file %s was not fount in directory %s.\n",inputFile,cwd);
+        return;
+    }
+
+    char name[150];
+    strncpy(name, firstName, sizeof(firstName));
+    strncat(name, " ", 150);
+    strncat(name, lastName, 150);
+
+    fprintf(output, "First and last name: %s\n", name);
+    fprintf(output, "Integer addition: \n");
+    fprintf(output, "Integer multiplication: \n");
+
+    while((c = (char) getc(input)) != EOF){
+        fputc(c, output);
+    }
+
+    fclose(input);
+    fclose(output);
+	free(cwd);
+}
+
+
+char * current_directory() {
+    char cwd[1024];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        char *cwd_tosend = (char *)malloc(sizeof(char) * sizeof(cwd)+1);
+		stpncpy(cwd_tosend, cwd, sizeof(cwd));
+        return cwd_tosend;
+    }
+    else {
+        return NULL;
+    }
+}
+
+FILE *  findFile(char* fileName, int flag){
+    FILE * start = NULL;
+    if(flag == 1){
+        start = fopen(fileName,"r");
+    }
+    else if(flag == 0){
+        start = fopen(fileName,"w+");
+    }
+    if(start!=NULL){
+        return start;
+    }
+
+    return NULL;
 }
