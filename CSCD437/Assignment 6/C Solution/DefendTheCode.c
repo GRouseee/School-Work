@@ -10,6 +10,7 @@ void getName(char* firstOrLast, char* name);
 void getFilename(char* inOrOut, char* name);
 void strip(char* array);
 char * current_directory();
+void combiner();
 
 int main(){
     	char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING];
@@ -140,18 +141,21 @@ void strip(char *array){
 	}
 }
 
+void combiner(){
+	char * cwd = current_directory();
+
+	free(cwd);
+}
+
 
 char * current_directory() {
     char cwd[1024];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         char *cwd_tosend = (char *)malloc(sizeof(char) * sizeof(cwd)+1);
+		stpncpy(cwd_tosend, cwd, sizeof(cwd));
         return cwd_tosend;
     }
     else {
-        return null;
+        return NULL;
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 42566891ebad850664201dd57bd90b7647686772
