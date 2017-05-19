@@ -141,9 +141,40 @@ void strip(char *array){
 	}
 }
 
-void combiner(){
+void combiner(char *firstName, char *lastName,char *inputFile, char *outputFile){
+    char c;
 	char * cwd = current_directory();
+    FILE * input = findFile(inputFile, 1);
+    FILE * output = NULL;
+    FILE * checkUnique = findFile(outputFile, 1);
+    if(checkUnique==NULL) {
+        output = findFile(outputFile, 0);
+    }
+    else{
+        printf("Output file %s already exists. Exiting.\n", outputFile);
+        return;
+    }
 
+    if(input == NULL) {
+        printf("Input file %s was not fount in directory %s.\n",inputFile,cwd);
+        return;
+    }
+
+    char name[150];
+    strncpy(name, firstName, sizeof(firstName));
+    strncat(name, " ", 150);
+    strncat(name, lastName, 150);
+
+    fprintf(output, "First and last name: %s\n", name);
+    fprintf(output, "Integer addition: \n");
+    fprintf(output, "Integer multiplication: \n");
+
+    while((c = (char) getc(input)) != EOF){
+        fputc(c, output);
+    }
+
+    fclose(input);
+    fclose(output);
 	free(cwd);
 }
 
@@ -158,4 +189,19 @@ char * current_directory() {
     else {
         return NULL;
     }
+}
+
+FILE *  findFile(char* fileName, int flag){
+    FILE * start = NULL;
+    if(flag == 1){
+        start = fopen(fileName,"r");
+    }
+    else if(flag == 0){
+        start = fopen(fileName,"w+");
+    }
+    if(start!=NULL){
+        return start;
+    }
+
+    return NULL;
 }
