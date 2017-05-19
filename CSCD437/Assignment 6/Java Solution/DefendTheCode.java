@@ -12,12 +12,10 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class DefendTheCode{
 	private static Scanner kb = new Scanner(System.in);
-	private static int int1, int2;
-	private static long addResult, multResult;
+	private static int int1, int2, addResult, multResult;
 	private static String firstName, lastName, inputFile, outputFile; 
 	private static byte[]password, verifyPassword;
 	private static byte[] salt;
-	private static File real_input_file, unique_output_file;
 
 	public static void main(String[] args){
 		try{
@@ -30,15 +28,14 @@ public class DefendTheCode{
 			if(combineContents()){
 				System.out.println("Successfully copied First + Last name, addition of the integers, mastication" +
 						" of the integers, and the contents of the input file into the output file which can be " +
-						"found in "+ System.getProperty("user.dir")+".");
+						"found in the directory of the java file.");
 			}
 			System.out.println(firstName + " " + lastName);
 			System.out.println(password);
 			System.out.println(addResult);
 			System.out.println(multResult);
-			System.out.println(inputFile.toString());
-			System.out.println(outputFile);
-
+     		System.out.println(inputFile.toString());
+     		System.out.println(outputFile);
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 			e.printStackTrace();
@@ -71,14 +68,21 @@ public class DefendTheCode{
 			}
 
 			else if(inputType.equals("integer") && compareToRegex(regex, attempt)){
-				intCount++;
-				int1 = Integer.parseInt(attempt);
-
-				if(intCount == 2){
-					int2 =Integer.parseInt(attempt);
-					addResult = addInts(int1, int2);
-					multResult = multInts(int1, int2);
-					isValid = true;
+				if(Integer.parseInt(attempt) > Integer.MAX_VALUE)
+					isValid = false;
+				if(Integer.parseInt(attempt) < Integer.MIN_VALUE)
+					isValid = false;
+				else{
+					intCount++;
+					if(intCount == 1)
+						int1 = Integer.parseInt(attempt);
+	
+					if(intCount == 2){
+						int2 = Integer.parseInt(attempt);
+						addResult = addInts(int1, int2);
+						multResult = multInts(int1, int2);
+						isValid = true;
+					}
 				}
 			}
 
@@ -101,16 +105,16 @@ public class DefendTheCode{
 		return isValid;
 	}
 	
-	static long addInts(int num1, int num2){
+	static int addInts(int num1, int num2){
 		return num1 + num2;
 	}
 
-	static long multInts(int num1, int num2){
+	static int multInts(int num1, int num2){
 		return num1 * num2;
 	}
 
 	static boolean getInteger() throws NoSuchAlgorithmException, InvalidKeySpecException{
-		String intRegex = "\\d";
+		String intRegex = "[+-]?[0-9]{1,10}";
 		String prompt = "Enter an integer value: ";
 		boolean isValid = getInput(intRegex, prompt, "integer");
 
@@ -174,8 +178,8 @@ public class DefendTheCode{
 	}
 
 	static boolean getInputFile() throws InvalidKeySpecException, NoSuchAlgorithmException {
-		String inputFileRegex = "^[\\w_-]{1,50}(.txt)$";
-		String prompt = "Enter an input file from current working directory (e.g. input.txt)";
+		String inputFileRegex = "^[\\w_\\\\.\\(\\)\\[\\]\\{\\}-]{1,255}(.txt)$";
+		String prompt = "Enter an input file from current working directory, must be a .txt file (e.g. input.txt)";
 		boolean isValid = getInput(inputFileRegex, prompt, "inputFile");
 
 		return isValid;
@@ -208,40 +212,19 @@ public class DefendTheCode{
 	 * @return boolean
 	 */
 	static boolean checkUniqueFileName(String attempt){
-		findFile(System.getProperty("user.dir"), attempt, 0);
 
-		if(unique_output_file != null){
-			System.out.println("File with that name already exists.");
-			return false;
-		}
-
-		return true;
-	}
-
-
-	/**
-	 * Recursively tries to match file with fileName, starting from path startparth,
-	 * working its way in each of its subdirectories.
-	 * @param startpath
-	 * @param fileName
-	 * @return
-	 */
-	static void findFile(String startpath, String fileName, int flag){
-		File startPath = new File(startpath);
-		File[] list;
-		if((list = startPath.listFiles()) != null){
-			for(File f: list) {
-				if (f.isDirectory()) {
-					findFile(f.getPath(), fileName, flag);
-				}
-				else if(f.getName().equals(fileName)){
-					if(flag == 1)
-						real_input_file = f;
-					else if(flag == 0)
-						unique_output_file = f;
+		File current_dir = new File(System.getProperty("user.dir") + "/src/Java");
+		File[] listOfFiles = current_dir.listFiles();
+		if(listOfFiles!=null){
+			for(File f: listOfFiles){
+				if(f.getName().equals(attempt+".txt")){
+					System.out.println("File with that name already exists.");
+					return false;
 				}
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -257,29 +240,22 @@ public class DefendTheCode{
 			String line;
 
 			//Opens inputfile and creates output file
-			findFile(System.getProperty("user.dir"), inputFile, 1);
-			File input = real_input_file;
+			File input = new File(inputFile);
 			File output = new File(outputFile +".txt");
 
-			//Checks if input file exists.
-			if(input == null) {
-				System.out.println("Input file " + inputFile + " was not found.");
-				return false;
-			}
-
 			//Opens inputfile reader
-			FileReader fr = new FileReader(input);
+			FileReader fr = new FileReader(System.getProperty("user.dir")+ "/src/Java/"+inputFile);
 			BufferedReader br = new BufferedReader(fr);
 
 			//Opens outputfile Writer
-			FileWriter fw = new FileWriter(output);
+			FileWriter fw = new FileWriter(outputFile +".txt");
 			BufferedWriter bw = new BufferedWriter(fw);
 
 			bw.write("First and Last name: "+ firstName + " " + lastName);
 			bw.newLine();
-			bw.write("Adding the two ints: "+ Long.toString(addInts(int1, int2)));
+			bw.write("Adding the two ints: "+ Integer.toString(addInts(int1, int2)));
 			bw.newLine();
-			bw.write("Multiplying the two ints: " + Long.toString(multInts(int1,int2)));
+			bw.write("Multiplying the two ints: " + Integer.toString(multInts(int1,int2)));
 			bw.newLine();
 
 			while((line = br.readLine())!=null){
