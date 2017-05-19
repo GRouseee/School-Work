@@ -286,7 +286,6 @@ public class DefendTheCode{
 				bw.write(line);
 				bw.newLine();
 			}
-
 			br.close();
 			bw.close();
 			fr.close();
