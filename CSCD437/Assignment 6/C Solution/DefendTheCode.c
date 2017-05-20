@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <regex.h>
+#include <unistd.h>
 
 #define MAX_STRING 50
 
@@ -15,17 +16,17 @@ void combiner();
 FILE *  findFile(char*, int);
 
 int main(){
-    char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING], verifyPassword[MAX_STRING];
+    	char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING], verifyPassword[MAX_STRING];
 
-    getName("first", firstName);
-    getName("last", lastName);
+    	getName("first", firstName);
+    	getName("last", lastName);
 	getPassword(password, 1);
 	getPassword(verifyPassword, 2);
 	validatePassword(password, verifyPassword);
 	getFilename("in", inputFile);
 	getFilename("out", outputFile);
 
-    printf("\r\n%s %s\r\n", firstName, lastName);
+    	printf("\r\n%s %s\r\n", firstName, lastName);
 	printf("%s\r\n", inputFile);
 	printf("%s\r\n", outputFile);
 
