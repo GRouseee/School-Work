@@ -5,23 +5,27 @@
 
 #define MAX_STRING 50
 
-void getPassword(char*);
+void getPassword(char* password, int type);
 void getName(char* firstOrLast, char* name);
 void getFilename(char* inOrOut, char* name);
 void strip(char* array);
+int validatePassword(char* attempt, char* verified);
 char * current_directory();
 void combiner();
+FILE *  findFile(char*, int);
 
 int main(){
-    	char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING];
+    char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING], verifyPassword[MAX_STRING];
 
-    	getName("first", firstName);
-    	getName("last", lastName);
-	getPassword(password);
+    getName("first", firstName);
+    getName("last", lastName);
+	getPassword(password, 1);
+	getPassword(verifyPassword, 2);
+	validatePassword(password, verifyPassword);
 	getFilename("in", inputFile);
 	getFilename("out", outputFile);
 
-    	printf("\r\n%s %s\r\n", firstName, lastName);
+    printf("\r\n%s %s\r\n", firstName, lastName);
 	printf("%s\r\n", inputFile);
 	printf("%s\r\n", outputFile);
 
@@ -59,7 +63,7 @@ void getName(char* firstOrLast, char* name){
 	regfree(&nameRegex);
 }
 
-void getPassword(char* password){
+void getPassword(char* password, int type){
 	int isValid = 0;
 	char buff[MAX_STRING + 1];
 	regex_t passwordRegex;
@@ -69,8 +73,12 @@ void getPassword(char* password){
 	regcomp(&passwordRegex, "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&=+*])(?=\\S+$).{8,}", REG_EXTENDED);
 
 	while(!isValid){
-		printf("Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character)\r\n");
-
+		if(type == 1)
+			printf("Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character)\r\n");
+		
+		if(type == 2)
+			printf("Re-enter password: ");
+		
 		if(fgets(buff, MAX_STRING, stdin)){
 			strip(buff);
 
@@ -88,6 +96,21 @@ void getPassword(char* password){
 
 	strncpy(password, buff, strlen(buff));
 	regfree(&passwordRegex);
+}
+
+int validatePassword(char* attempt, char* verified){
+	int ctr = 0;
+	
+	while(ctr != 1){
+		if(strncmp(attempt, verified, strlen(verified)) == 0){
+			printf("Password valid.");
+			ctr = 1;
+		}
+		else{
+			printf("%s", "Password invalid. Try again: \r\n");
+			getPassword(attempt,2);
+		}
+	}
 }
 
 void getFilename(char* inOrOut, char* name){
