@@ -22,12 +22,13 @@ long multInts(long intOne, long intTwo);
 int main(){
     char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING], verifyPassword[MAX_STRING];
     long intOne=0, intTwo=0;
-
+	int first=1, second=2;
+	
     getName("first", firstName);
     getName("last", lastName);
-	//getPassword(password, 1);
-	//getPassword(verifyPassword, 2);
-	//validatePassword(password, verifyPassword);
+	getPassword(password, first);
+	getPassword(verifyPassword, second);
+	validatePassword(password, verifyPassword);
     getInt(&intOne);
     getInt(&intTwo);
     getFilename("in", inputFile);
@@ -79,23 +80,22 @@ void getName(char* firstOrLast, char* name){
 }
 
 void getPassword(char* password, int type){
-	int isValid = 0;
-	char buff[MAX_STRING + 1];
-	regex_t passwordRegex;
+    int isValid = 0;
+    char buff[MAX_STRING + 1];
+    regex_t passwordRegex;
 
 	memset(buff, '\0', MAX_STRING);
 	memset(password, '\0', MAX_STRING);
-	regcomp(&passwordRegex, "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", REG_EXTENDED);
+	regcomp(&passwordRegex, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}", REG_EXTENDED);
 
-	while(!isValid){
+	while (!isValid){
 		if(type == 1){
-			printf("Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character)\r\n");
+			printf("Enter password with at least 8 characters, a lowercase, uppercase, a digit, and a special character\r\n");
 		}
-		
 		if(type == 2){
-			printf("Re-enter password: ");
+			printf("Re-enter password\r\n");
 		}
-		
+	
 		if (fgets(buff, MAX_STRING, stdin)){
 			if(strlen(buff)==MAX_STRING-1){
 				discardExtraSTDIN();
@@ -107,15 +107,15 @@ void getPassword(char* password, int type){
 				isValid = 1;
 			}
 			else{
-				printf("%s", "Invalid password\r\n");
+				printf("%s", "Invalid name\r\n");
 			}
 		}
 		else{
-			printf("%s", "Invalid password\r\n");
+			printf("%s", "Invalid name\r\n");
 		}
-	}
+    }
 
-	strncpy(password, buff, strlen(buff));
+    strncpy(password, buff, strlen(buff));
 	regfree(&passwordRegex);
 }
 
