@@ -10,7 +10,7 @@ void getPassword(char* password, int type);
 void getName(char* firstOrLast, char* name);
 void getFilename(char* inOrOut, char* name);
 void strip(char* array);
-int validatePassword(char* attempt, char* verified);
+void validatePassword(char* attempt, char* verified);
 char * current_directory();
 void combiner();
 FILE *  findFile(char*, int);
@@ -99,7 +99,7 @@ void getPassword(char* password, int type){
 	regfree(&passwordRegex);
 }
 
-int validatePassword(char* attempt, char* verified){
+void validatePassword(char* attempt, char* verified){
 	int ctr = 0;
 	
 	while(ctr != 1){
@@ -185,7 +185,7 @@ void combiner(char *firstName, char *lastName,char *inputFile, char *outputFile)
     }
 
     char name[150];
-    strncpy(name, firstName, sizeof(firstName));
+    strncpy(name, firstName, strlen(firstName));
     strncat(name, " ", 150);
     strncat(name, lastName, 150);
 
