@@ -25,13 +25,13 @@ int main(){
 
     getName("first", firstName);
     getName("last", lastName);
+	//getPassword(password, 1);
+	//getPassword(verifyPassword, 2);
+	//validatePassword(password, verifyPassword);
     getInt(&intOne);
     getInt(&intTwo);
     getFilename("in", inputFile);
     getFilename("out", outputFile);
-//	getPassword(password, 1);
-//	getPassword(verifyPassword, 2);
-//	validatePassword(password, verifyPassword);
 
     combiner(firstName, lastName, inputFile, outputFile, &intOne, &intTwo);
 
@@ -52,16 +52,15 @@ void getName(char* firstOrLast, char* name){
 	memset(name, '\0', MAX_STRING);
     regcomp(&nameRegex, "^[A-Za-z'-]{1,50}$", REG_EXTENDED);
 
-    	while (!isValid){
-        	printf("Enter your %s name (50 or fewer characters)\r\n", firstOrLast);
-        
-        	if (fgets(buff, MAX_STRING, stdin)){
-                if(strlen(buff)==MAX_STRING-1){
-                    discardExtraSTDIN();
-                }
+	while (!isValid){
+		printf("Enter your %s name (50 or fewer characters)\r\n", firstOrLast);
+	
+		if (fgets(buff, MAX_STRING, stdin)){
+			if(strlen(buff)==MAX_STRING-1){
+				discardExtraSTDIN();
+			}
 
-
-			    strip(buff);
+			strip(buff);
 
 			if (!regexec(&nameRegex, buff, 0, 0, 0)){
 				isValid = 1;
@@ -75,7 +74,7 @@ void getName(char* firstOrLast, char* name){
 		}
     }
 
-    	strncpy(name, buff, strlen(buff));
+    strncpy(name, buff, strlen(buff));
 	regfree(&nameRegex);
 }
 
@@ -86,22 +85,25 @@ void getPassword(char* password, int type){
 
 	memset(buff, '\0', MAX_STRING);
 	memset(password, '\0', MAX_STRING);
-	regcomp(&passwordRegex, "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&=+*])(?=\\S+$).{8,}", REG_EXTENDED);
+	regcomp(&passwordRegex, "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", REG_EXTENDED);
 
 	while(!isValid){
-		if(type == 1)
+		if(type == 1){
 			printf("Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character)\r\n");
+		}
 		
-		if(type == 2)
+		if(type == 2){
 			printf("Re-enter password: ");
+		}
 		
-		if(fgets(buff, MAX_STRING, stdin)){
-            if(strlen(buff)==MAX_STRING-1){
-                discardExtraSTDIN();
-            }
+		if (fgets(buff, MAX_STRING, stdin)){
+			if(strlen(buff)==MAX_STRING-1){
+				discardExtraSTDIN();
+			}
+
 			strip(buff);
 
-			if(!regexec(&passwordRegex, buff, 0, 0, 0)){
+			if (!regexec(&passwordRegex, buff, 0, 0, 0)){
 				isValid = 1;
 			}
 			else{
@@ -119,9 +121,10 @@ void getPassword(char* password, int type){
 
 void validatePassword(char* attempt, char* verified){
 	int ctr = 0;
+	int result = strncmp(attempt, verified, strlen(verified));
 	
 	while(ctr != 1){
-		if(strncmp(attempt, verified, strlen(verified)) == 0){
+		if(result == 0){
 			printf("Password valid.");
 			ctr = 1;
 		}
@@ -144,7 +147,7 @@ void getFilename(char* inOrOut, char* name){
 	while(!isValid){
 		printf("Enter an %sput file (must be a .txt file in the same directory as the application)\r\n", inOrOut);
 		
-		if (fgets(buff, MAX_STRING, stdin)){
+		if(fgets(buff, MAX_STRING, stdin)){
             if(strlen(buff)==MAX_STRING-1){
                 discardExtraSTDIN();
             }
@@ -166,7 +169,7 @@ void getFilename(char* inOrOut, char* name){
 	}
 
 	strncpy(name, buff, strlen(buff));
-    	regfree(&fileRegex);
+    regfree(&fileRegex);
 }
 
 void strip(char *array){
