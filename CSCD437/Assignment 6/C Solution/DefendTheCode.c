@@ -86,7 +86,7 @@ void getPassword(char* password, int type){
 
 	memset(buff, '\0', MAX_STRING);
 	memset(password, '\0', MAX_STRING);
-	regcomp(&passwordRegex, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}", REG_EXTENDED);
+	regcomp(&passwordRegex, "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}", REG_EXTENDED);
 
 	while (!isValid){
 		if(type == 1){
