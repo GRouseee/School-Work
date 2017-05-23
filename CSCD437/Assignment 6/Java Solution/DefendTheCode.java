@@ -12,9 +12,9 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class DefendTheCode{
 	private static Scanner kb = new Scanner(System.in);
-	private static int int1, int2;
+	private static long int1, int2;
 	private static long addResult, multResult;
-	private static String firstName, lastName, inputFile, outputFile; 
+	private static String firstName, lastName, inputFile, outputFile;
 	private static byte[]password, verifyPassword;
 	private static byte[] salt;
 	private static File real_input_file, unique_output_file;
@@ -28,38 +28,46 @@ public class DefendTheCode{
 			getInputFile();
 			getOutputName();
 			if(combineContents()){
-				System.out.println("Successfully copied First + Last name, addition of the integers, mastication" +
+				System.out.println("Successfully copied First + Last name, addition of the integers, multiplication" +
 						" of the integers, and the contents of the input file into the output file which can be " +
 						"found in "+ System.getProperty("user.dir")+".");
 			}
-			System.out.println(firstName + " " + lastName);
-			System.out.println(password);
-			System.out.println(addResult);
-			System.out.println(multResult);
-			System.out.println(inputFile.toString());
-			System.out.println(outputFile);
+//			System.out.println(firstName + " " + lastName);
+//			System.out.println(password);
+//			System.out.println(addResult);
+//			System.out.println(multResult);
+//			System.out.println(inputFile);
+//			System.out.println(outputFile);
 
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 			e.printStackTrace();
 		}
 	}
-	
+
 	static boolean getInput(String regex, String prompt, String inputType) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		boolean isValid = false;
 		int intCount = 0;
 
 		while(!isValid){
 			System.out.println(prompt);
+			String attempt="";
 
-			String attempt = kb.nextLine();
+			try {
+				attempt = userInput();
+				//System.out.println(attempt);
+			}catch(Exception e){
+				System.out.println("Input was too large");
+			}
+
+			//String attempt = kb.nextLine();
 
 			if(inputType.equals("password") && compareToRegex(regex, attempt)){
 				salt = getSalt();
 				password = getSecuredPassword(attempt, salt);
 				isValid = true;
 			}
-			
+
 			else if(inputType.equals("verifypassword") && compareToRegex(regex, attempt)){
 				verifyPassword = getSecuredPassword(attempt, salt);
 				isValid = validatePassword(verifyPassword, password);
@@ -71,17 +79,27 @@ public class DefendTheCode{
 			}
 
 			else if(inputType.equals("integer") && compareToRegex(regex, attempt)){
-				intCount++;
-				int1 = Integer.parseInt(attempt);
-
-				if(intCount == 2){
-					int2 =Integer.parseInt(attempt);
-					addResult = addInts(int1, int2);
-					multResult = multInts(int1, int2);
-					isValid = true;
+				if(intCount ==0){
+					int1 = Long.parseLong(attempt);
+					if(int1 <= 2147483647 && int1 >= -2147483648){
+						intCount++;
+					}
+					else{
+						System.out.println("Integer Value not in range. (-2147483648 to 2147483647)");
+					}
+				}
+				else if(intCount == 1){
+					int2 = Long.parseLong(attempt);
+					if(int2 <= 2147483647 && int1 >= -2147483648) {
+						addResult = addInts(int1, int2);
+						multResult = multInts(int1, int2);
+						isValid = true;
+					}
+					else{
+						System.out.println("Integer Value not in range. (-2147483648 to 2147483647)");
+					}
 				}
 			}
-
 			else if(inputType.equals("firstName") && compareToRegex(regex, attempt)){
 				firstName = attempt;
 				isValid = true;
@@ -96,21 +114,24 @@ public class DefendTheCode{
 				inputFile = attempt;
 				isValid = true;
 			}
+			else{
+				System.out.println("Invalid input for " + inputType.toUpperCase() +" value.");
+			}
 		}
-		
+
 		return isValid;
 	}
-	
-	static long addInts(int num1, int num2){
+
+	static long addInts(long num1, long num2){
 		return num1 + num2;
 	}
 
-	static long multInts(int num1, int num2){
+	static long multInts(long num1, long num2){
 		return num1 * num2;
 	}
 
 	static boolean getInteger() throws NoSuchAlgorithmException, InvalidKeySpecException{
-		String intRegex = "\\d";
+		String intRegex = "(^[-]?)([1-9][0-9]?){1,10}";
 		String prompt = "Enter an integer value: ";
 		boolean isValid = getInput(intRegex, prompt, "integer");
 
@@ -121,15 +142,15 @@ public class DefendTheCode{
 		String passwordRegex = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
 		String prompt = "Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character): ";
 		boolean isValid = getInput(passwordRegex, prompt, "password");
-		
+
 		return isValid;
 	}
-	
+
 	static boolean verifyPassword() throws NoSuchAlgorithmException, InvalidKeySpecException{
 		String passwordRegex = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
 		String prompt = "Re-enter your password: ";
 		boolean isValid = getInput(passwordRegex, prompt, "verifypassword");
-		
+
 		if(isValid){
 			System.out.println("Your password is valid.");
 			return isValid;
@@ -139,27 +160,27 @@ public class DefendTheCode{
 			return isValid;
 		}
 	}
-	
+
 	static boolean validatePassword(byte[] passwordAttempt, byte[] securePassword){;
 		return Arrays.equals(passwordAttempt, securePassword);
 	}
-	
+
 	static byte[] getSecuredPassword(String password, byte[] theSalt) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		/*Make our secure password*/
 		int keyLen = 160;
 		int iterations = 2000;
 		KeySpec keySpec = new PBEKeySpec(password.toCharArray(), theSalt, iterations, keyLen);
 		SecretKeyFactory key = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-		
+
 		return key.generateSecret(keySpec).getEncoded();
 	}
-	
+
 	static byte[] getSalt() throws NoSuchAlgorithmException{
 		/*Make our salt*/
 		byte[] theSalt = new byte[8];
 		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
 		random.nextBytes(theSalt);
-		
+
 		return theSalt;
 	}
 
@@ -174,7 +195,7 @@ public class DefendTheCode{
 	}
 
 	static boolean getInputFile() throws InvalidKeySpecException, NoSuchAlgorithmException {
-		String inputFileRegex = "^[\\w_-]{1,50}(.txt)$";
+		String inputFileRegex = "^[\\w_-]{1,255}(.txt)$";
 		String prompt = "Enter an input file from current working directory (e.g. input.txt)";
 		boolean isValid = getInput(inputFileRegex, prompt, "inputFile");
 
@@ -182,10 +203,10 @@ public class DefendTheCode{
 	}
 
 	static boolean compareToRegex(String regex, String input){
-        	Pattern pattern = Pattern.compile(regex);
-        	Matcher matcher = pattern.matcher(input);
-        
-        	return matcher.matches();
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(input);
+
+		return matcher.matches();
 	}
 
 
@@ -197,7 +218,7 @@ public class DefendTheCode{
 		String outputfileRegex = "([a-zA-Z0-9!#$%&\\(\\)\\{\\}\\]\\[\\^_`~@; ]){1,255}";
 		String prompt = "Enter a output file name. (must be within this directory (run from commandline), the file cannot exist" +
 				", no file extensions, and it must be using the English Alphabet.)";
-		
+
 		return getInput(outputfileRegex, prompt, "outputfile");
 	}
 
@@ -277,9 +298,9 @@ public class DefendTheCode{
 
 			bw.write("First and Last name: "+ firstName + " " + lastName);
 			bw.newLine();
-			bw.write("Adding the two ints: "+ Long.toString(addInts(int1, int2)));
+			bw.write("Adding the two ints: "+ addResult);
 			bw.newLine();
-			bw.write("Multiplying the two ints: " + Long.toString(multInts(int1,int2)));
+			bw.write("Multiplying the two ints: " + multResult);
 			bw.newLine();
 
 			while((line = br.readLine())!=null){
@@ -297,4 +318,29 @@ public class DefendTheCode{
 
 		return true;
 	}
+
+
+	static String userInput(){
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		char[] buff = new char[255];
+		String attempt="";
+		int i;
+
+		try {
+			i= br.read(buff);
+			if( i >= 255){
+				br.readLine();
+			}
+			for(char b: buff){
+				if(b!='\n' && b!='\0' && b!='\r'){
+					attempt+=b;
+				}
+			}
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
+		return attempt;
+	}
 }
+
