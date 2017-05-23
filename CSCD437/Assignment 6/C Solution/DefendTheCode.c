@@ -80,15 +80,15 @@ void getName(char* firstOrLast, char* name){
 
 void getPassword(char* type, char* password){
     int isValid = 0;
-    char buff[MAX_STRING + 1];
+    char buff[MAX_STRING +1];
     regex_t passwordRegex;
 
 	memset(buff, '\0', MAX_STRING);
 	memset(password, '\0', MAX_STRING);
-	regcomp(&passwordRegex, "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}", REG_EXTENDED);
+	regcomp(&passwordRegex, "^[0-9a-zA-Z]{8,}$", REG_EXTENDED);
 
 	while (!isValid){
-		printf("%s password with at least 8 characters, a lowercase, uppercase, a digit, and a special character\r\n", type);
+		printf("%s password with at least 8 characters, a lowercase, uppercase, and a digit\r\n", type);
 	
 		if (fgets(buff, MAX_STRING, stdin)){
 			if(strlen(buff)==MAX_STRING-1){
@@ -119,11 +119,11 @@ void validatePassword(char* attempt, char* verified){
 	
 	while(ctr != 1){
 		if(result == 0){
-			printf("Password valid.");
+			printf("Password valid.\r\n");
 			ctr = 1;
 		}
 		else{
-			printf("%s", "Password invalid. Try again: \r\n");
+			printf("%s", "Password invalid. Try again\r\n");
 			getPassword("Re-enter", attempt);
 		}
 	}
