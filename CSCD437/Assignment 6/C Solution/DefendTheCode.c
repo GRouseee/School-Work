@@ -124,7 +124,7 @@ void validatePassword(char* attempt, char* verified){
 		}
 		else{
 			printf("%s", "Password invalid. Try again: \r\n");
-			getPassword(attempt,2);
+			getPassword("Re-enter", attempt);
 		}
 	}
 }
