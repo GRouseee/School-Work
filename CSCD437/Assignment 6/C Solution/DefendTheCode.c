@@ -1,3 +1,5 @@
+//Ethan Tuning, Gavin Rouse, Collin Nolen
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -36,9 +38,9 @@ int main(){
 
     combiner(firstName, lastName, inputFile, outputFile, &intOne, &intTwo);
 
-    printf("\r\n%s %s\r\n", firstName, lastName);
-	printf("%s\r\n", inputFile);
-	printf("%s\r\n", outputFile);
+    //printf("\r\n%s %s\r\n", firstName, lastName);
+	//printf("%s\r\n", inputFile);
+	//printf("%s\r\n", outputFile);
 
 
 	return 0;
