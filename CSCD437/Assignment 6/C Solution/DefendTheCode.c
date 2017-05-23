@@ -3,14 +3,17 @@
 #include <string.h>
 #include <regex.h>
 #include <unistd.h>
+#include <time.h>
+#include "md5.h"
 
 #define MAX_STRING 50
+#define MAX_CHAR 255
 
 void getPassword(char* enterOrRenter, char* thePassword);
+void getHashedPassword(char* passwordToHash);
 void getName(char* firstOrLast, char* name);
 void getFilename(char* inOrOut, char* name);
 void strip(char* array);
-void validatePassword(char* attempt, char* verified);
 char * current_directory();
 void combiner(char *firstName, char *lastName,char *inputFile, char *outputFile,  long* intOne, long* intTwo);
 FILE *  findFile(char*, int);
@@ -20,14 +23,12 @@ long addInts(long intOne, long intTwo);
 long multInts(long intOne, long intTwo);
 
 int main(){
-    char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING], verifyPassword[MAX_STRING];
+    char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], verifyPassword[MAX_STRING];
     long intOne=0, intTwo=0;
 	
     getName("first", firstName);
     getName("last", lastName);
-	getPassword("Enter", password);
-	getPassword("Re-enter", verifyPassword);
-	validatePassword(password, verifyPassword);
+	getHashedPassword(verifyPassword);
     getInt(&intOne);
     getInt(&intTwo);
     getFilename("in", inputFile);
@@ -101,11 +102,11 @@ void getPassword(char* type, char* password){
 				isValid = 1;
 			}
 			else{
-				printf("%s", "Invalid name\r\n");
+				printf("%s", "Invalid password.\r\n");
 			}
 		}
 		else{
-			printf("%s", "Invalid name\r\n");
+			printf("%s", "Invalid password.\r\n");
 		}
     }
 
@@ -113,18 +114,66 @@ void getPassword(char* type, char* password){
 	regfree(&passwordRegex);
 }
 
-void validatePassword(char* attempt, char* verified){
-	int ctr = 0;
-	int result = strncmp(attempt, verified, strlen(verified));
+void getHashedPassword(char* passwordToHash){
+	int isValid = 0;
+	char password[MAX_STRING];
+	char verifyPassword[sizeof(password)];
+	unsigned int hash[4];
+	unsigned int verifyHash[4];
+	char salt[8];
+	int i;
 	
-	while(ctr != 1){
-		if(result == 0){
-			printf("Password valid.\r\n");
-			ctr = 1;
+	srand(clock());
+	
+	for(i = 0; i < (int)sizeof(salt); ++i){
+		salt[i] = (char)((rand()%(MAX_CHAR - 1)) +1);
+	}
+	
+	getPassword("Enter", password);
+	int length = strlen((char*) password);
+	int saltIndex = 0;
+	
+	for(i = length; i < length + (int)sizeof(salt); ++i){
+		password[i] = salt[saltIndex++];
+	}
+	for(; i < (int)sizeof(password); ++i){
+		password[i] = '\0';
+	}
+	
+	md5_vfy((unsigned char*)password, sizeof(password), hash, hash +1, hash +2, hash +3);
+	
+	for(i = 0; i < (int)sizeof(password); ++i){
+		password[i] = '\0';
+	}
+	
+	while(!isValid){
+		isValid = 1;
+		
+		getPassword("Re-enter", verifyPassword);
+		int verifyLength = strlen((char*)verifyPassword);
+		saltIndex = 0;
+		
+		for(i = length; i < verifyLength + (int)sizeof(salt); ++i){
+			verifyPassword[i] = salt[saltIndex++];
+		}
+		for(; i < (int)sizeof(password); ++i){
+			verifyPassword[i] = '\0';
+		}
+		
+		md5_vfy((unsigned char*)verifyPassword, sizeof(password), verifyHash, verifyHash+1, verifyHash+2, verifyHash+3);
+		
+		for(i = 0; i < 4; ++i){
+			if(hash[i] != verifyHash[i]){
+				isValid = 0;
+			}
+		}
+		
+		if(isValid){
+			printf("Password is valid.\r\n");
+			break;
 		}
 		else{
-			printf("%s", "Password invalid. Try again\r\n");
-			getPassword("Re-enter", attempt);
+			printf("Password is not valid.\r\n");
 		}
 	}
 }

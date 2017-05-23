@@ -12,12 +12,10 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class DefendTheCode{
 	private static Scanner kb = new Scanner(System.in);
-	private static long int1, int2;
-	private static long addResult, multResult;
-	private static String firstName, lastName, inputFile, outputFile;
+	private static int int1, int2, addResult, multResult;
+	private static String firstName, lastName, inputFile, outputFile; 
 	private static byte[]password, verifyPassword;
 	private static byte[] salt;
-	private static File real_input_file, unique_output_file;
 
 	public static void main(String[] args){
 		try{
@@ -28,46 +26,37 @@ public class DefendTheCode{
 			getInputFile();
 			getOutputName();
 			if(combineContents()){
-				System.out.println("Successfully copied First + Last name, addition of the integers, multiplication" +
+				System.out.println("Successfully copied First + Last name, addition of the integers, mastication" +
 						" of the integers, and the contents of the input file into the output file which can be " +
-						"found in "+ System.getProperty("user.dir")+".");
+						"found in the directory of the java file.");
 			}
-//			System.out.println(firstName + " " + lastName);
-//			System.out.println(password);
-//			System.out.println(addResult);
-//			System.out.println(multResult);
-//			System.out.println(inputFile);
-//			System.out.println(outputFile);
-
+			System.out.println(firstName + " " + lastName);
+			System.out.println(password);
+			System.out.println(addResult);
+			System.out.println(multResult);
+     		System.out.println(inputFile.toString());
+     		System.out.println(outputFile);
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
 			e.printStackTrace();
 		}
 	}
-
+	
 	static boolean getInput(String regex, String prompt, String inputType) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		boolean isValid = false;
 		int intCount = 0;
 
 		while(!isValid){
 			System.out.println(prompt);
-			String attempt="";
 
-			try {
-				attempt = userInput();
-				//System.out.println(attempt);
-			}catch(Exception e){
-				System.out.println("Input was too large");
-			}
-
-			//String attempt = kb.nextLine();
+			String attempt = kb.nextLine();
 
 			if(inputType.equals("password") && compareToRegex(regex, attempt)){
 				salt = getSalt();
 				password = getSecuredPassword(attempt, salt);
 				isValid = true;
 			}
-
+			
 			else if(inputType.equals("verifypassword") && compareToRegex(regex, attempt)){
 				verifyPassword = getSecuredPassword(attempt, salt);
 				isValid = validatePassword(verifyPassword, password);
@@ -79,27 +68,24 @@ public class DefendTheCode{
 			}
 
 			else if(inputType.equals("integer") && compareToRegex(regex, attempt)){
-				if(intCount ==0){
-					int1 = Long.parseLong(attempt);
-					if(int1 <= 2147483647 && int1 >= -2147483648){
-						intCount++;
-					}
-					else{
-						System.out.println("Integer Value not in range. (-2147483648 to 2147483647)");
-					}
-				}
-				else if(intCount == 1){
-					int2 = Long.parseLong(attempt);
-					if(int2 <= 2147483647 && int1 >= -2147483648) {
+				if(Integer.parseInt(attempt) > Integer.MAX_VALUE)
+					isValid = false;
+				if(Integer.parseInt(attempt) < Integer.MIN_VALUE)
+					isValid = false;
+				else{
+					intCount++;
+					if(intCount == 1)
+						int1 = Integer.parseInt(attempt);
+	
+					if(intCount == 2){
+						int2 = Integer.parseInt(attempt);
 						addResult = addInts(int1, int2);
 						multResult = multInts(int1, int2);
 						isValid = true;
 					}
-					else{
-						System.out.println("Integer Value not in range. (-2147483648 to 2147483647)");
-					}
 				}
 			}
+
 			else if(inputType.equals("firstName") && compareToRegex(regex, attempt)){
 				firstName = attempt;
 				isValid = true;
@@ -114,24 +100,21 @@ public class DefendTheCode{
 				inputFile = attempt;
 				isValid = true;
 			}
-			else{
-				System.out.println("Invalid input for " + inputType.toUpperCase() +" value.");
-			}
 		}
-
+		
 		return isValid;
 	}
-
-	static long addInts(long num1, long num2){
+	
+	static int addInts(int num1, int num2){
 		return num1 + num2;
 	}
 
-	static long multInts(long num1, long num2){
+	static int multInts(int num1, int num2){
 		return num1 * num2;
 	}
 
 	static boolean getInteger() throws NoSuchAlgorithmException, InvalidKeySpecException{
-		String intRegex = "(^[-]?)([1-9][0-9]?){1,10}";
+		String intRegex = "[+-]?[0-9]{1,10}";
 		String prompt = "Enter an integer value: ";
 		boolean isValid = getInput(intRegex, prompt, "integer");
 
@@ -142,15 +125,15 @@ public class DefendTheCode{
 		String passwordRegex = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
 		String prompt = "Enter a password at least 8 characters long (must contain a lower case, upper case, a digit, and a special character): ";
 		boolean isValid = getInput(passwordRegex, prompt, "password");
-
+		
 		return isValid;
 	}
-
+	
 	static boolean verifyPassword() throws NoSuchAlgorithmException, InvalidKeySpecException{
 		String passwordRegex = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
 		String prompt = "Re-enter your password: ";
 		boolean isValid = getInput(passwordRegex, prompt, "verifypassword");
-
+		
 		if(isValid){
 			System.out.println("Your password is valid.");
 			return isValid;
@@ -160,27 +143,27 @@ public class DefendTheCode{
 			return isValid;
 		}
 	}
-
+	
 	static boolean validatePassword(byte[] passwordAttempt, byte[] securePassword){;
 		return Arrays.equals(passwordAttempt, securePassword);
 	}
-
+	
 	static byte[] getSecuredPassword(String password, byte[] theSalt) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		/*Make our secure password*/
 		int keyLen = 160;
 		int iterations = 2000;
 		KeySpec keySpec = new PBEKeySpec(password.toCharArray(), theSalt, iterations, keyLen);
 		SecretKeyFactory key = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-
+		
 		return key.generateSecret(keySpec).getEncoded();
 	}
-
+	
 	static byte[] getSalt() throws NoSuchAlgorithmException{
 		/*Make our salt*/
 		byte[] theSalt = new byte[8];
 		SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
 		random.nextBytes(theSalt);
-
+		
 		return theSalt;
 	}
 
@@ -195,18 +178,18 @@ public class DefendTheCode{
 	}
 
 	static boolean getInputFile() throws InvalidKeySpecException, NoSuchAlgorithmException {
-		String inputFileRegex = "^[\\w_-]{1,255}(.txt)$";
-		String prompt = "Enter an input file from current working directory (e.g. input.txt)";
+		String inputFileRegex = "^[\\w_\\\\.\\(\\)\\[\\]\\{\\}-]{1,255}(.txt)$";
+		String prompt = "Enter an input file from current working directory, must be a .txt file (e.g. input.txt)";
 		boolean isValid = getInput(inputFileRegex, prompt, "inputFile");
 
 		return isValid;
 	}
 
 	static boolean compareToRegex(String regex, String input){
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(input);
-
-		return matcher.matches();
+        	Pattern pattern = Pattern.compile(regex);
+        	Matcher matcher = pattern.matcher(input);
+        
+        	return matcher.matches();
 	}
 
 
@@ -218,7 +201,7 @@ public class DefendTheCode{
 		String outputfileRegex = "([a-zA-Z0-9!#$%&\\(\\)\\{\\}\\]\\[\\^_`~@; ]){1,255}";
 		String prompt = "Enter a output file name. (must be within this directory (run from commandline), the file cannot exist" +
 				", no file extensions, and it must be using the English Alphabet.)";
-
+		
 		return getInput(outputfileRegex, prompt, "outputfile");
 	}
 
@@ -229,40 +212,19 @@ public class DefendTheCode{
 	 * @return boolean
 	 */
 	static boolean checkUniqueFileName(String attempt){
-		findFile(System.getProperty("user.dir"), attempt, 0);
 
-		if(unique_output_file != null){
-			System.out.println("File with that name already exists.");
-			return false;
-		}
-
-		return true;
-	}
-
-
-	/**
-	 * Recursively tries to match file with fileName, starting from path startparth,
-	 * working its way in each of its subdirectories.
-	 * @param startpath
-	 * @param fileName
-	 * @return
-	 */
-	static void findFile(String startpath, String fileName, int flag){
-		File startPath = new File(startpath);
-		File[] list;
-		if((list = startPath.listFiles()) != null){
-			for(File f: list) {
-				if (f.isDirectory()) {
-					findFile(f.getPath(), fileName, flag);
-				}
-				else if(f.getName().equals(fileName)){
-					if(flag == 1)
-						real_input_file = f;
-					else if(flag == 0)
-						unique_output_file = f;
+		File current_dir = new File(System.getProperty("user.dir") + "/src/Java");
+		File[] listOfFiles = current_dir.listFiles();
+		if(listOfFiles!=null){
+			for(File f: listOfFiles){
+				if(f.getName().equals(attempt+".txt")){
+					System.out.println("File with that name already exists.");
+					return false;
 				}
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -278,35 +240,29 @@ public class DefendTheCode{
 			String line;
 
 			//Opens inputfile and creates output file
-			findFile(System.getProperty("user.dir"), inputFile, 1);
-			File input = real_input_file;
+			File input = new File(inputFile);
 			File output = new File(outputFile +".txt");
 
-			//Checks if input file exists.
-			if(input == null) {
-				System.out.println("Input file " + inputFile + " was not found.");
-				return false;
-			}
-
 			//Opens inputfile reader
-			FileReader fr = new FileReader(input);
+			FileReader fr = new FileReader(System.getProperty("user.dir")+ "/src/Java/"+inputFile);
 			BufferedReader br = new BufferedReader(fr);
 
 			//Opens outputfile Writer
-			FileWriter fw = new FileWriter(output);
+			FileWriter fw = new FileWriter(outputFile +".txt");
 			BufferedWriter bw = new BufferedWriter(fw);
 
 			bw.write("First and Last name: "+ firstName + " " + lastName);
 			bw.newLine();
-			bw.write("Adding the two ints: "+ addResult);
+			bw.write("Adding the two ints: "+ Integer.toString(addInts(int1, int2)));
 			bw.newLine();
-			bw.write("Multiplying the two ints: " + multResult);
+			bw.write("Multiplying the two ints: " + Integer.toString(multInts(int1,int2)));
 			bw.newLine();
 
 			while((line = br.readLine())!=null){
 				bw.write(line);
 				bw.newLine();
 			}
+
 			br.close();
 			bw.close();
 			fr.close();
@@ -318,29 +274,4 @@ public class DefendTheCode{
 
 		return true;
 	}
-
-
-	static String userInput(){
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		char[] buff = new char[255];
-		String attempt="";
-		int i;
-
-		try {
-			i= br.read(buff);
-			if( i >= 255){
-				br.readLine();
-			}
-			for(char b: buff){
-				if(b!='\n' && b!='\0' && b!='\r'){
-					attempt+=b;
-				}
-			}
-		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
-		return attempt;
-	}
 }
-
