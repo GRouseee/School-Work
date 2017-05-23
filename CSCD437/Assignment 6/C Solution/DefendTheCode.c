@@ -6,7 +6,7 @@
 
 #define MAX_STRING 50
 
-void getPassword(char* password, int type);
+void getPassword(char* enterOrRenter, char* thePassword);
 void getName(char* firstOrLast, char* name);
 void getFilename(char* inOrOut, char* name);
 void strip(char* array);
@@ -22,12 +22,11 @@ long multInts(long intOne, long intTwo);
 int main(){
     char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], password[MAX_STRING], verifyPassword[MAX_STRING];
     long intOne=0, intTwo=0;
-	int first=1, second=2;
 	
     getName("first", firstName);
     getName("last", lastName);
-	getPassword(password, first);
-	getPassword(verifyPassword, second);
+	getPassword("Enter", password);
+	getPassword("Re-enter", verifyPassword);
 	validatePassword(password, verifyPassword);
     getInt(&intOne);
     getInt(&intTwo);
@@ -79,7 +78,7 @@ void getName(char* firstOrLast, char* name){
 	regfree(&nameRegex);
 }
 
-void getPassword(char* password, int type){
+void getPassword(char* type, char* password){
     int isValid = 0;
     char buff[MAX_STRING + 1];
     regex_t passwordRegex;
@@ -89,12 +88,7 @@ void getPassword(char* password, int type){
 	regcomp(&passwordRegex, "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}", REG_EXTENDED);
 
 	while (!isValid){
-		if(type == 1){
-			printf("Enter password with at least 8 characters, a lowercase, uppercase, a digit, and a special character\r\n");
-		}
-		if(type == 2){
-			printf("Re-enter password\r\n");
-		}
+		printf("%s password with at least 8 characters, a lowercase, uppercase, a digit, and a special character\r\n", type);
 	
 		if (fgets(buff, MAX_STRING, stdin)){
 			if(strlen(buff)==MAX_STRING-1){
