@@ -32,7 +32,7 @@ int main(){
 	
     getName("first", firstName);
     getName("last", lastName);
-	getHashedPassword();
+    getHashedPassword();
     getInt(&intOne);
     getInt(&intTwo);
     getFilename("in", inputFile);
@@ -47,8 +47,8 @@ void getName(char* firstOrLast, char* name){
     char buff[MAX_STRING + 1];
     regex_t nameRegex;
 
-	memset(buff, '\0', MAX_STRING);
-	memset(name, '\0', MAX_STRING);
+    memset(buff, '\0', MAX_STRING);
+    memset(name, '\0', MAX_STRING);
     regcomp(&nameRegex, "^[A-Za-z'-]{1,50}$", REG_EXTENDED);
 
 	while (!isValid){
@@ -74,7 +74,7 @@ void getName(char* firstOrLast, char* name){
     }
 
     strncpy(name, buff, strlen(buff));
-	regfree(&nameRegex);
+    regfree(&nameRegex);
 }
 
 void getPassword(char* type, char* password){
@@ -82,9 +82,9 @@ void getPassword(char* type, char* password){
     char buff[MAX_STRING +1];
     regex_t passwordRegex;
 
-	memset(buff, '\0', MAX_STRING);
-	memset(password, '\0', MAX_STRING);
-	regcomp(&passwordRegex, "^[0-9a-zA-Z]{8,}$", REG_EXTENDED);
+    memset(buff, '\0', MAX_STRING);
+    memset(password, '\0', MAX_STRING);
+    regcomp(&passwordRegex, "^[0-9a-zA-Z]{8,}$", REG_EXTENDED);
 
 	while (!isValid){
 		printf("%s password with at least 8 characters, a lowercase, uppercase, and a digit\r\n", type);
