@@ -1,4 +1,6 @@
-//Ethan Tuning, Gavin Rouse, Collin Nolen
+/*
+ * Ethan Tuning, Gavin Rouse, Collin Nolen
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,7 +14,7 @@
 #define MAX_CHAR 255
 
 void getPassword(char* enterOrRenter, char* thePassword);
-void getHashedPassword(char* passwordToHash);
+void getHashedPassword();
 void getName(char* firstOrLast, char* name);
 void getFilename(char* inOrOut, char* name);
 void strip(char* array);
@@ -25,24 +27,18 @@ long addInts(long intOne, long intTwo);
 long multInts(long intOne, long intTwo);
 
 int main(){
-    char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING], verifyPassword[MAX_STRING];
+    char firstName[MAX_STRING], lastName[MAX_STRING], inputFile[MAX_STRING], outputFile[MAX_STRING];
     long intOne=0, intTwo=0;
 	
     getName("first", firstName);
     getName("last", lastName);
-	getHashedPassword(verifyPassword);
+	getHashedPassword();
     getInt(&intOne);
     getInt(&intTwo);
     getFilename("in", inputFile);
     getFilename("out", outputFile);
 
     combiner(firstName, lastName, inputFile, outputFile, &intOne, &intTwo);
-
-    //printf("\r\n%s %s\r\n", firstName, lastName);
-	//printf("%s\r\n", inputFile);
-	//printf("%s\r\n", outputFile);
-
-
 	return 0;
 }
 
@@ -116,7 +112,7 @@ void getPassword(char* type, char* password){
 	regfree(&passwordRegex);
 }
 
-void getHashedPassword(char* passwordToHash){
+void getHashedPassword(){
 	int isValid = 0;
 	char password[MAX_STRING];
 	char verifyPassword[sizeof(password)];
@@ -124,6 +120,8 @@ void getHashedPassword(char* passwordToHash){
 	unsigned int verifyHash[4];
 	char salt[8];
 	int i;
+	int saltIndex = 0;
+	int length;
 	
 	srand(clock());
 	
@@ -132,8 +130,7 @@ void getHashedPassword(char* passwordToHash){
 	}
 	
 	getPassword("Enter", password);
-	int length = strlen((char*) password);
-	int saltIndex = 0;
+	length = strlen((char*) password);
 	
 	for(i = length; i < length + (int)sizeof(salt); ++i){
 		password[i] = salt[saltIndex++];
@@ -149,10 +146,11 @@ void getHashedPassword(char* passwordToHash){
 	}
 	
 	while(!isValid){
+		int verifyLength;
 		isValid = 1;
 		
 		getPassword("Re-enter", verifyPassword);
-		int verifyLength = strlen((char*)verifyPassword);
+		verifyLength = strlen((char*)verifyPassword);
 		saltIndex = 0;
 		
 		for(i = length; i < verifyLength + (int)sizeof(salt); ++i){
@@ -218,12 +216,12 @@ void getFilename(char* inOrOut, char* name){
 }
 
 void strip(char *array){
+	size_t len = strlen(array), x = 0;
+	
 	if(array == NULL){
 		perror("array is null");
 		exit(-99);
 	}
-
-	size_t len = strlen(array), x = 0;
 
 	while(array[x] != '\0' && x < len){
 		if(array[x] == '\r')
@@ -287,6 +285,7 @@ void combiner(char *firstName, char *lastName,char *inputFile, char *outputFile,
     FILE * input = findFile(inputFile, 1);
     FILE * output = NULL;
     FILE * checkUnique = findFile(outputFile, 1);
+	char name[150];
 
     if(input == NULL) {
         printf("Input file %s was not found in directory %s. FAILED TO CREATE %s.\n",inputFile,cwd, outputFile);
@@ -302,9 +301,7 @@ void combiner(char *firstName, char *lastName,char *inputFile, char *outputFile,
         free(cwd);
         return;
     }
-
-
-    char name[150];
+	
     strncpy(name, firstName, strlen(firstName));
     strncat(name, " ", 150);
     strncat(name, lastName, 150);
