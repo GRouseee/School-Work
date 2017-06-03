@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -20,6 +21,7 @@ public class DefendTheCode{
 	private static byte[]password, verifyPassword;
 	private static byte[] salt;
 	private static File real_input_file, unique_output_file;
+	private static ArrayList<String> errors = new ArrayList<>();
 
 	public static void main(String[] args){
 		try{
@@ -45,7 +47,6 @@ public class DefendTheCode{
 		boolean isValid = false;
 		int intCount = 0;
 		String attempt;
-		int int1=0, int2=0;
 		
 		while(!isValid){
 			System.out.println(prompt);
@@ -81,8 +82,15 @@ public class DefendTheCode{
 						
 						if(intCount == 2){
 							int2 = Integer.parseInt(attempt);
-							addResult = addInts(int1, int2);
-							multResult = multInts(int1, int2);
+							try {
+								addResult = addInts(int1, int2);
+								multResult = multInts(int1, int2);
+							}
+							catch (ArithmeticException e)
+							{
+								errors.add("Overflow occurred when adding or multiplying the two ints\r\n");
+								System.out.println("Overflow occurred when adding or multiplying the two ints");
+							}
 							isValid = true;
 						}
 					}
@@ -110,13 +118,9 @@ public class DefendTheCode{
 		return isValid;
 	}
 	
-	static long addInts(int num1, int num2){
-		return num1 + num2;
-	}
+	static long addInts(int num1, int num2){ return Math.addExact(num1, num2); }
 
-	static long multInts(int num1, int num2){
-		return num1 * num2;
-	}
+	static long multInts(int num1, int num2){ return Math.multiplyExact(num1, num2); }
 
 	static boolean getInteger() throws NoSuchAlgorithmException, InvalidKeySpecException{
 		String intRegex = "\\d+";
@@ -286,15 +290,22 @@ public class DefendTheCode{
 
 			bw.write("First and Last name: "+ firstName + " " + lastName);
 			bw.newLine();
-			bw.write("Adding the two ints: "+ Long.toString(addInts(int1, int2)));
+			bw.write("Adding the two ints: "+ addResult);
 			bw.newLine();
-			bw.write("Multiplying the two ints: " + Long.toString(multInts(int1,int2)));
+			bw.write("Multiplying the two ints: " + multResult);
 			bw.newLine();
 
 			while((line = br.readLine())!=null){
 				bw.write(line);
 				bw.newLine();
 			}
+
+			for (String s : errors)
+			{
+				bw.write(s);
+				bw.newLine();
+			}
+
 			br.close();
 			bw.close();
 			fr.close();
