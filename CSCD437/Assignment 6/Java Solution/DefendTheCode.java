@@ -34,12 +34,6 @@ public class DefendTheCode{
 						" of the integers, and the contents of the input file into the output file which can be " +
 						"found in "+ System.getProperty("user.dir")+".");
 			}
-			//System.out.println(firstName + " " + lastName);
-			//System.out.println(password);
-			//System.out.println(addResult);
-			//System.out.println(multResult);
-			//System.out.println(inputFile.toString());
-			//System.out.println(outputFile);
 
 		}catch(Exception e){
 			System.out.println("Something bad happened...");
@@ -50,11 +44,13 @@ public class DefendTheCode{
 	static boolean getInput(String regex, String prompt, String inputType) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		boolean isValid = false;
 		int intCount = 0;
-
+		String attempt;
+		int int1=0, int2=0;
+		
 		while(!isValid){
 			System.out.println(prompt);
 
-			String attempt = kb.nextLine();
+			attempt = kb.nextLine();
 
 			if(inputType.equals("password") && compareToRegex(regex, attempt)){
 				salt = getSalt();
@@ -73,14 +69,25 @@ public class DefendTheCode{
 			}
 
 			else if(inputType.equals("integer") && compareToRegex(regex, attempt)){
-				intCount++;
-				int1 = Integer.parseInt(attempt);
-
-				if(intCount == 2){
-					int2 =Integer.parseInt(attempt);
-					addResult = addInts(int1, int2);
-					multResult = multInts(int1, int2);
-					isValid = true;
+				try{
+					if(Integer.parseInt(attempt) > Integer.MAX_VALUE || Integer.parseInt(attempt) < Integer.MIN_VALUE){
+						System.out.println("Integer in-valid.");
+					}
+					else{
+						intCount++;
+						if(intCount == 1)
+							int1 = Integer.parseInt(attempt);
+						
+						
+						if(intCount == 2){
+							int2 = Integer.parseInt(attempt);
+							addResult = addInts(int1, int2);
+							multResult = multInts(int1, int2);
+							isValid = true;
+						}
+					}
+				}catch(NumberFormatException e){
+					System.out.println("Integer in-valid.");
 				}
 			}
 
@@ -112,7 +119,7 @@ public class DefendTheCode{
 	}
 
 	static boolean getInteger() throws NoSuchAlgorithmException, InvalidKeySpecException{
-		String intRegex = "\\d";
+		String intRegex = "\\d+";
 		String prompt = "Enter an integer value: ";
 		boolean isValid = getInput(intRegex, prompt, "integer");
 
